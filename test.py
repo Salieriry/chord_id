@@ -10,9 +10,9 @@ data_path = './dataset/isolated-guitar-chords/data/Test'
 target_chords = ['C', 'Dm', 'Em', 'F', 'G', 'Am', 'Bm']
 class_quantity = len(target_chords)
 
-W = np.load('W.npy')
-Wz = np.load('Wz.npy')
-x_max_abs = np.load('x_max_abs.npy')
+W = np.load('pesosSalvos/W81.npy')
+Wz = np.load('pesosSalvos/Wz81.npy')
+x_max_abs = np.load('pesosSalvos/x_max_abs.npy')
 
 print("Weights loaded successfully!")
 
@@ -63,7 +63,6 @@ Y = exp_T / np.sum(exp_T, axis=1, keepdims=True) # saída da camada de saída us
 
 predicted_classes = np.argmax(Y, axis=1)
 gabarito = np.array(Gabarito_list)
-confidence_scores = np.max(Y, axis=1) * 100
 
 confusion_matrix = np.zeros((class_quantity, class_quantity), dtype=int)
 
@@ -75,13 +74,6 @@ for i in range(len(predicted_classes)):
         
     confusion_matrix[gabarito[i], predicted_classes[i]] += 1            
 
-print("\nCerteza da rede por amostra:")
-for i in range(len(predicted_classes)):
-    real_label = target_chords[gabarito[i]]
-    predicted_label = target_chords[predicted_classes[i]]
-    print(
-        f"Amostra {i + 1:03d} | Real: {real_label:<3} | Prevista: {predicted_label:<3} | Certeza: {confidence_scores[i]:6.2f}%"
-    )
 
 print(f"Total samples: {len(predicted_classes)}, Correct predictions: {acertos}")
 print(f"Accuracy: {acertos / len(predicted_classes) * 100:.2f}%")

@@ -92,9 +92,9 @@ for epoch in range(5000): # número de épocas para treinamento
         print(f"Training stopped at epoch {epoch} with Mean Squared Error: {mean_squared_error}")
         break
 
-np.save('W.npy', W)
-np.save('Wz.npy', Wz)
-np.save('x_max_abs.npy', x_max_abs)
+np.save('pesosSalvos/W.npy', W)
+np.save('pesosSalvos/Wz.npy', Wz)
+np.save('pesosSalvos/x_max_abs.npy', x_max_abs)
 print("Pesos e x_max_abs guardados com sucesso!")
 
 print("Feature matrix X shape:", X.shape)
