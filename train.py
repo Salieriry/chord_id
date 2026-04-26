@@ -80,10 +80,10 @@ for epoch in range(5000): # número de épocas para treinamento
     Tetha_z = 0.5 * lamb * (1 - Z ** 2) # derivada da função de ativação para a camada oculta
     Delta_z = Ez * Tetha_z # delta da camada oculta
 
-    Wz += alpha * np.dot(biased_Z.T, Deltay)
-    W += alpha * np.dot(biased_X.T, Delta_z)
+    Wz += alpha * np.dot(biased_Z.T, Deltay) # atualização dos pesos da camada de saída
+    W += alpha * np.dot(biased_X.T, Delta_z) # atualização dos pesos da camada oculta
 
-    mean_squared_error = np.mean(Ey ** 2)
+    mean_squared_error = np.mean(Ey ** 2) # cálculo do erro médio quadrático para monitoramento do treinamento
     
     if epoch % 100 == 0:
         print("Mean Squared Error:", mean_squared_error)
@@ -95,7 +95,7 @@ for epoch in range(5000): # número de épocas para treinamento
 np.save('pesosSalvos/W.npy', W)
 np.save('pesosSalvos/Wz.npy', Wz)
 np.save('pesosSalvos/x_max_abs.npy', x_max_abs)
-print("Pesos e x_max_abs guardados com sucesso!")
+print("Weights and x_max_abs saved sucessfully!")
 
 print("Feature matrix X shape:", X.shape)
 print("Output matrix d shape:", d.shape)
