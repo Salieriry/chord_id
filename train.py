@@ -2,10 +2,30 @@ import os
 import librosa
 import numpy as np
 
+print("\n" + "="*50)
+print(f"{'Hyperparams Settings':^50}")
+print("="*50)
+print("Press ENTER for Default values.\n")
 
-# caminho dos dados de treinamento
+def get_int(prompt, default):
+    answer = input(f"{prompt} [Default: {default}]: ").strip()
+    return int(answer) if answer else default
+
+def get_float(prompt, default):
+    answer = input(f"{prompt} [Default: {default}]: ").strip()
+    return float(answer) if answer else default
+
+# Recebendo os dados do usuário
+neu_qnt = get_int("Number of hidden layer neurons", 128)
+lamb = get_float("Lambda value (activation slope)", 0.5)
+alpha = get_float("Learning rate (Alpha)", 0.07)
+stop_criterion = get_float("Stopping criterion Error (MSE)", 0.005)
+max_epochs = get_int("Maximum number of epochs", 5000)
+
+print(f"\nStarting with: Neurons={neu_qnt} | Lambda={lamb} | Alpha={alpha} | Stop<={stop_criterion}")
+print("-" * 50)
+
 data_path = './dataset/isolated-guitar-chords/data/Train'
-
 target_chords = ['C', 'Dm', 'Em', 'F', 'G', 'Am', 'Bm']
 class_quantity = len(target_chords)
 
@@ -14,9 +34,7 @@ d_list = []
 
 for chord in target_chords:
     folder_path = os.path.join(data_path, chord)
-    
     if not os.path.exists(folder_path):
-        print(f"Folder for chord '{chord}' not found. Skipping.")
         continue
     
     chord_index = target_chords.index(chord)
@@ -32,8 +50,6 @@ for chord in target_chords:
             output_array = np.zeros(class_quantity)
             output_array[chord_index] = 1.0
             d_list.append(output_array)
-
-
 
 # declarações iniciais
 X = np.array(X_list) # entradas dos MFCCs
@@ -89,16 +105,12 @@ for epoch in range(5000): # número de épocas para treinamento
         print("Mean Squared Error:", mean_squared_error)
 
     if mean_squared_error <= stop_criterion:
-        print(f"Training stopped at epoch {epoch} with Mean Squared Error: {mean_squared_error}")
+        print(f"Training completed at epoch {epoch} with Mean Squared Error: {mean_squared_error}")
         break
-
+    
+    
+os.makedirs('pesosSalvos', exist_ok=True)
 np.save('pesosSalvos/W.npy', W)
 np.save('pesosSalvos/Wz.npy', Wz)
 np.save('pesosSalvos/x_max_abs.npy', x_max_abs)
-print("Weights and x_max_abs saved sucessfully!")
-
-print("Feature matrix X shape:", X.shape)
-print("Output matrix d shape:", d.shape)
-print("Biased feature matrix shape:", biased_X.shape)
-print("Weight matrix W shape:", W.shape)
-print("Weight matrix Wz shape:", Wz.shape)
+print("\nCurrent weights successfully saved in the 'pesosSalvos' folder.")

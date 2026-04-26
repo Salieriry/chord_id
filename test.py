@@ -2,28 +2,52 @@ import os
 import librosa
 import numpy as np
 
+print("\n" + "="*50)
+print(f"{'TEST CONFIGURATION':^50}")
+print("="*50)
+
+# Menu interativo
+print("Choose which weights to test:")
+print("[1] BEST saved weights (W81.npy / Wz81.npy)")
+print("[2] RECENT weights from last training (W.npy / Wz.npy)")
+choice = input("Enter 1 or 2 [Default: 2]: ").strip()
+
+best_mode = (choice == '1')
+
+lamb_str = input("\nWhat Lambda was used in training? [Default: 0.5]: ").strip()
+lamb = float(lamb_str) if lamb_str else 0.5
+
+print("-" * 50)
+
+if best_mode:
+    w_file = 'pesosSalvos/W81.npy'
+    wz_file = 'pesosSalvos/Wz81.npy'
+    print("Selected mode: TEST BEST WEIGHTS (81%)")
+else:
+    w_file = 'pesosSalvos/W.npy'
+    wz_file = 'pesosSalvos/Wz.npy'
+    print("Selected mode: TEST LATEST TRAINING")
+
+try:
+    W = np.load(w_file)
+    Wz = np.load(wz_file)
+    x_max_abs = np.load('pesosSalvos/x_max_abs.npy')
+    print("Weights loaded successfully! Analyzing audio files...\n")
+except FileNotFoundError:
+    print(f"\nError: Could not find files '{w_file}' or '{wz_file}'. Please train the model first.")
+    exit()
+
 hits = 0
-
-# caminho dos dados de treinamento
 data_path = './dataset/isolated-guitar-chords/data/Test'
-
 target_chords = ['C', 'Dm', 'Em', 'F', 'G', 'Am', 'Bm']
 class_quantity = len(target_chords)
-
-W = np.load('pesosSalvos/W81.npy')
-Wz = np.load('pesosSalvos/Wz81.npy')
-x_max_abs = np.load('pesosSalvos/x_max_abs.npy')
-
-print("Weights loaded successfully!")
 
 X_list = []
 Chord_list = []
 
 for chord in target_chords:
     folder_path = os.path.join(data_path, chord)
-    
     if not os.path.exists(folder_path):
-        print(f"Folder for chord '{chord}' not found. Skipping.")
         continue
     
     chord_index = target_chords.index(chord)
@@ -38,15 +62,12 @@ for chord in target_chords:
             X_list.append(mfccs_mean)
             Chord_list.append(chord_index)
 
-            
-            
+
 X = np.array(X_list) # entradas dos MFCCs
 X = X / x_max_abs # normalização dos dados de entrada
 
 bias_colum_x = np.ones((X.shape[0], 1)) 
 biased_X = np.hstack((X, bias_colum_x)) # adiciona a coluna de bias às entradas
-
-lamb = 0.5
 
 S = np.dot(biased_X, W) # produto entre as entradas e os pesos da camada oculta 
 
@@ -67,15 +88,12 @@ real_chord = np.array(Chord_list)
 confusion_matrix = np.zeros((class_quantity, class_quantity), dtype=int)
 
 for i in range(len(predicted_classes)):
-     
-     
     if predicted_classes[i] == real_chord[i]:
         hits += 1 
-        
     confusion_matrix[real_chord[i], predicted_classes[i]] += 1            
 
-
-print(f"Total samples: {len(predicted_classes)}, Correct predictions: {hits}")
+print(f"Total Samples: {len(predicted_classes)}")
+print(f"PCorrect predictions: {hits}")
 print(f"Accuracy: {hits / len(predicted_classes) * 100:.2f}%")
 
 print("\n" + "="*65)
@@ -86,23 +104,13 @@ header = "Real \ Pred | " + " | ".join([f"{chord:>4}" for chord in target_chords
 print(header)
 print("-" * len(header))
 
-
 for i, row in enumerate(confusion_matrix):
-    real_chord = target_chords[i]
-    
+    real_chord_name = target_chords[i]
     row_str = " | ".join([f"{val:>4}" for val in row])
     
     total_samples = np.sum(row)
     class_accuracy = (row[i] / total_samples * 100) if total_samples > 0 else 0
     
-    print(f"{real_chord:>11} | {row_str} | Accuracy: {class_accuracy:>5.1f}%")
+    print(f"{real_chord_name:>11} | {row_str} | Accuracy: {class_accuracy:>5.1f}%")
 
 print("="*65)
-
-
-
-
-
-
-
-
