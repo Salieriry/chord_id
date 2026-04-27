@@ -61,10 +61,6 @@ X = X / x_max_abs # normalização dos dados de entrada
 bias_colum_x = np.ones((X.shape[0], 1)) 
 biased_X = np.hstack((X, bias_colum_x)) # adiciona a coluna de bias às entradas
 
-neu_qnt = 128 # quantidade de neurônios na camada oculta
-lamb = 0.5 # parâmetro de inclinação da função de ativação
-alpha = 0.03 # taxa de aprendizado
-stop_criterion = 0.005 # critério de parada para o erro médio quadrático
 W = np.random.uniform(-0.5, 0.5, (biased_X.shape[1], neu_qnt)) # pesos da camada de entrada para a camada oculta (incluindo bias)
 Wz = np.random.uniform(-0.5, 0.5, (neu_qnt + 1, class_quantity)) # pesos da camada oculta para a camada de saída (incluindo bias)
 
