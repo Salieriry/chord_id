@@ -64,7 +64,7 @@ biased_X = np.hstack((X, bias_colum_x)) # adiciona a coluna de bias às entradas
 W = np.random.uniform(-0.5, 0.5, (biased_X.shape[1], neu_qnt)) # pesos da camada de entrada para a camada oculta (incluindo bias)
 Wz = np.random.uniform(-0.5, 0.5, (neu_qnt + 1, class_quantity)) # pesos da camada oculta para a camada de saída (incluindo bias)
 
-for epoch in range(5000): # número de épocas para treinamento
+for epoch in range(max_epochs): # número de épocas para treinamento
     # muda com as epochs
     S = np.dot(biased_X, W) # produto entre as entradas e os pesos da camada oculta 
 
